@@ -34,77 +34,46 @@
         font-size: 20px;
         font-weight: bold;
     }
-
+    @page {
+        margin: 10mm 15mm 10mm 15mm; /* atas kanan bawah kiri */
+    }
 
 
 </style>
     <hr>
    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 style="text-align: center;">Data Rekapan Kehadiran Karyawan Bulan {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->translatedFormat('F') }}
-         Tahun {{$tahun}}</h3>
+    <h4>Data Absensi Bulan {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}</h4>
+
         <br>
     </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead >
+                <tr>
+                    <th >Nama</th>
+                    @foreach($harian as $tanggal)
+                    <th style="{{ $tanggal['is_libur'] ? 'background-color: #dc3545; color: white;' : '' }}">
+                        {{ \Carbon\Carbon::parse($tanggal['tanggal'])->format('d') }}
+                    </th>
 
-@foreach($rekap as $karyawan)
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Nama : {{ $karyawan['nama'] }}</h3>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($rekap as $item)
+                    <tr>
+                        <td>{{ $item['nama'] }}</td>
+                        @foreach($item['harian'] as $hari)
+                        <td style="{{ $hari['is_libur'] ? 'background-color: #dc3545; color: white;' : '' }}">
+                            {{ $hari['status'] }}
+                        </td>
+
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-    <table class="table table-bordered mb-4" style="font-size: 11px;">
-    <thead>
-        <tr>
-            <th>Rekap Mingguan</th>
-            <th>Hadir</th>
-            <th>Izin</th>
-            <th>Sakit</th>
-            <th>Alpha</th>
-            <th>Telat</th>
-            <th>Kasbon</th>
-        </tr>
-    </thead>
-    <tbody>
-        @php
-            $totalHadir = 0;
-            $totalIzin = 0;
-            $totalSakit = 0;
-            $totalAlpha = 0;
-            $totalTelat = 0;
-            $totalKasbon = 0;
-        @endphp
 
-        @foreach($karyawan['minggu'] as $data)
-            <tr>
-                <td>{{ $data['periode'] }}</td>
-                <td>{{ $data['hadir'] }}</td>
-                <td>{{ $data['izin'] }}</td>
-                <td>{{ $data['sakit'] }}</td>
-                <td>{{ $data['alpha'] }}</td>
-                <td>{{ $data['telat'] }}</td>
-                <td>{{ number_format($data['kasbon'],0,0) }}</td>
-            </tr>
-            @php
-                $totalHadir += $data['hadir'];
-                $totalIzin += $data['izin'];
-                $totalSakit += $data['sakit'];
-                $totalAlpha += $data['alpha'];
-                $totalTelat += $data['telat'];
-                $totalKasbon += $data['kasbon'];
-            @endphp
-        @endforeach
-    </tbody>
-    <tfoot>
-        <tr>
-            <th>Total Keseluruhan</th>
-            <th>{{ $totalHadir }}</th>
-            <th>{{ $totalIzin }}</th>
-            <th>{{ $totalSakit }}</th>
-            <th>{{ $totalAlpha }}</th>
-            <th>{{ $totalTelat }}</th>
-            <th>{{ number_format($totalKasbon,0,0) }}</th>
-        </tr>
-    </tfoot>
-</table>
-
-    </table>
-@endforeach
 
 @endsection

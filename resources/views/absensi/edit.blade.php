@@ -83,12 +83,7 @@
                                   <option value="Alpha" {{ (optional($absen)->status_kehadiran == 'Alpha') ? 'selected' : '' }}>Alpha</option>
                               </select>
                           </td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <input class="telat" type="number" name="absensi[{{ $index }}][telat]" class="form-control" value="{{$absen->telat}}" min="0" max="15" placeholder=" Jika Telat...">
-                                <small>Menit</small>
-                            </div>
-                        </td>
+
                             <td>
                                 <input type="text" name="absensi[{{ $index }}][keterangan]" class="form-control" placeholder="Opsional" value="{{ optional($absen)->keterangan }}">
                             </td>
@@ -97,7 +92,6 @@
                     </tbody>
                 </table>
             </div>
-            @role('admin')
             <div class="row">
                 <div class="col-md-4">
                     <div class="d-flex text-center mt-4">
@@ -105,7 +99,6 @@
                     </div>
                 </div>
             </div>
-            @endrole
         </form>
     </div>
   </div>

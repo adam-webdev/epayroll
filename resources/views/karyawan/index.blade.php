@@ -198,6 +198,20 @@
                     </div>
                 </div>
 
+                <div class="col-md-4 mt-2">
+                    <div class="form-floating">
+                        <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" id="user_id">
+                          @foreach($users as $user)
+                              <option value="{{ $user->id }}">{{ $user->name }}</option>
+                          @endforeach
+                        </select>
+                        <label for="user_id">User Akun </label>
+                        @error('user_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
 
                   <div class="col-md-8 mt-2">
                       <div class="form-floating">
@@ -220,7 +234,6 @@
                     <div id="foto-preview" class="preview-container"></div>
                   </div>
               </div>
-              @role('admin')
               <div class="row">
                   <div class="col-md-4">
                       <div class="d-flex text-center mt-4">
@@ -228,7 +241,6 @@
                       </div>
                   </div>
               </div>
-              @endrole
           </form>
               <!-- End Floating Labels Form -->
 
@@ -279,7 +291,7 @@
                           <td>{{ $karyawan->nama }}</td>
                           <td>
                             {{ $karyawan->tanggal_masuk ? $karyawan->tanggal_masuk->translatedFormat('l, d F Y') : '-' }}
-                          <td>{{ $karyawan->jabatan }}</td>
+                          <td>{{ $karyawan->jabatan->nama_jabatan }}</td>
                           <td>{{ $karyawan->nik }}</td>
                           <td>{{ $karyawan->no_hp }}</td>
                       </tr>

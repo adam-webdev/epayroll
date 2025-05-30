@@ -7,12 +7,10 @@
         <div class="card-body">
           <div class="d-flex justify-content-between ">
             <h5 class="card-title">Data Absensi Karyawan</h5>
-            @role('admin')
             <div class="mt-2">
               <a href="{{route('absensi.rekap')}}" class="btn btn-sm btn-success mt-2"><i class='bx bx-task'></i>Rekap Kehadiran</a>
               <a href="{{route('absensi.create')}}" class="btn btn-sm button-tambah mt-2">+ Input Absen</a>
             </div>
-            @endrole
           </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-responsive" id="datatable">

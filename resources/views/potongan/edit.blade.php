@@ -66,8 +66,8 @@
                   <div class="col-md-4 mt-2">
                       <div class="form-floating">
                           <select name="otomatis" class="form-select @error('otomatis') is-invalid @enderror" id="otomatis">
-                              <option value="0" {{ old('otomatis', $potongan->otomatis) == false ? 'selected' : '' }}>Tidak</option>
-                              <option value="1" {{ old('otomatis', $potongan->otomatis) == true ? 'selected' : '' }}>Ya</option>
+                              <option value="0" {{ old('otomatis', $potongan->otomatis) == 0 ? 'selected' : '' }}>Tidak</option>
+                              <option value="1" {{ old('otomatis', $potongan->otomatis) == 1 ? 'selected' : '' }}>Ya</option>
                           </select>
                           <label for="otomatis">Otomatis Diterapkan?</label>
                           @error('otomatis')

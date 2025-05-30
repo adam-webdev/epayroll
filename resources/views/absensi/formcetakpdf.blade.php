@@ -39,9 +39,9 @@
                     <button type="submit" name="export" value="pdf" class="btn btn-danger ">
                         <i class="bi bi-file-earmark-pdf"></i> PDF
                     </button>
-                    <button type="submit" name="export" value="excel" class="btn btn-success">
+                    <!-- <button type="submit" name="export" value="excel" class="btn btn-success">
                         <i class="bi bi-file-earmark-excel"></i> Excel
-                    </button>
+                    </button> -->
                 </div>
 
             </div>

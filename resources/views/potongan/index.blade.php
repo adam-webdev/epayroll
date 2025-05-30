@@ -62,14 +62,19 @@
                 </div>
 
                 <div class="col-md-4 mt-2">
-                    <div class="form-check mt-4">
-                        <input class="form-check-input @error('otomatis') is-invalid @enderror" type="checkbox" id="otomatis" name="otomatis" value="1">
-                        <label class="form-check-label" for="otomatis">Potongan Otomatis</label>
-                        @error('otomatis')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
+                  <div class="form-floating">
+                      <select name="otomatis" class="form-select @error('otomatis') is-invalid @enderror" id="otomatis">
+                          <option value="1" selected>Ya</option>
+                          <option value="0">Tidak</option>
+                      </select>
+                      <label for="otomatis"> Otomatis Diterapkan ?</label>
+                      @error('otomatis')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                      @enderror
+                  </div>
+              </div>
+
+
 
                 <div class="col-md-12 mt-2">
                     <div class="form-floating">
@@ -142,10 +147,10 @@
                     @if ($potongan->tipe == 'persentase')
                       {{ $potongan->nilai }}%
                     @else
-                      Rp{{ number_format($potongan->nilai, 0, ',', '.') }}
+                      Rp. {{ number_format($potongan->nilai, 0, ',', '.')  }}
                     @endif
                   </td>
-                  <td>{{ $potongan->otomatis ? 'Ya' : 'Tidak' }}</td>
+                  <td>{{ $potongan->otomatis === 1 ? 'Ya' : 'Tidak' }}</td>
                   <td>{{ $potongan->status }}</td>
                   <td>{{ $potongan->deskripsi }}</td>
                 </tr>

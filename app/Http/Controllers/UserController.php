@@ -42,7 +42,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-        $user->assignRole('gudang');
+        $user->assignRole('karyawan');
         return redirect()->route('users.index')->with('success', 'User baru berhasil ditambahkan.');
     }
 

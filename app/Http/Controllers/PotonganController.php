@@ -56,6 +56,7 @@ class PotonganController extends Controller
             'nama_potongan' => 'required|unique:potongans,nama_potongan,' . $potongan->id,
             'tipe' => 'required|in:persentase,nominal',
             'nilai' => 'required|numeric',
+            'otomatis' => 'nullable|boolean',
         ], [
             'nama_potongan.required' => 'Nama potongan harus diisi',
             'nama_potongan.unique' => 'Nama potongan sudah ada',
@@ -63,6 +64,7 @@ class PotonganController extends Controller
             'tipe.in' => 'Tipe potongan tidak valid',
             'nilai.required' => 'Nilai potongan harus diisi',
             'nilai.numeric' => 'Nilai potongan harus berupa angka',
+            'otomatis.boolean' => 'Otomatis harus berupa true atau false',
         ]);
 
         $potongan->update([
@@ -71,7 +73,7 @@ class PotonganController extends Controller
             'status' => $request->status,
             'tipe' => $request->tipe,
             'nilai' => $request->nilai,
-            'otomatis' => $request->has('otomatis'),
+            'otomatis' => $request->otomatis,
         ]);
 
         return redirect()->route('potongan.index')->with('success', 'Potongan berhasil diperbarui');

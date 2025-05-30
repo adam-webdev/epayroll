@@ -69,35 +69,57 @@
                 <button type="submit" class="btn button-tambah">Filter</button>
             </form>
 
-            <h5>Data Absensi Bulan {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}</h5>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead >
+            @foreach($rekap as $karyawan)
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>{{ $karyawan['nama'] }}</h5>
+                    <div>
+                        <a class="grafik-text" href="{{ route('grafik.kehadiran', ['karyawan_id' => $karyawan['karyawan_id']]) }}"><i class='bx bx-line-chart' style="font-size: 14px;"></i>Lihat Grafik </a>
+                    </div>
+                </div>
+                <table class="table table-bordered mb-4">
+                    <thead>
+                        @php
+                            $totalHadir = 0;
+                            $totalIzin = 0;
+                            $totalSakit = 0;
+                            $totalAlpha = 0;
+                        @endphp
                         <tr>
-                            <th >Nama</th>
-                            @foreach($harian as $tanggal)
-                                <th class="{{ $tanggal['is_libur'] ? 'bg-danger text-white' : '' }}">
-                                    {{ \Carbon\Carbon::parse($tanggal['tanggal'])->format('d') }}
-                                </th>
-                            @endforeach
+                            <th>Rekap Mingguan</th>
+                            <th>Hadir</th>
+                            <th>Izin</th>
+                            <th>Sakit</th>
+                            <th>Alpha</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($rekap as $item)
+                        @foreach($karyawan['minggu'] as $data)
                             <tr>
-                                <td>{{ $item['nama'] }}</td>
-                                @foreach($item['harian'] as $hari)
-                                    <td class="{{ $hari['is_libur'] ? 'bg-danger text-white' : '' }}">
-                                        {{ $hari['status'] }}
-                                    </td>
-                                @endforeach
+                                <td>{{ $data['periode'] }}</td>
+                                <td>{{ $data['hadir'] }}</td>
+                                <td>{{ $data['izin'] }}</td>
+                                <td>{{ $data['sakit'] }}</td>
+                                <td>{{ $data['alpha'] }}</td>
                             </tr>
+                            @php
+                                $totalHadir += $data['hadir'];
+                                $totalIzin += $data['izin'];
+                                $totalSakit += $data['sakit'];
+                                $totalAlpha += $data['alpha'];
+                            @endphp
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Total Keseluruhan</strong></td>
+                            <td><strong>{{ $totalHadir }}</strong></td>
+                            <td><strong>{{ $totalIzin }}</strong></td>
+                            <td><strong>{{ $totalSakit }}</strong></td>
+                            <td><strong>{{ $totalAlpha }}</strong></td>
+                        </tr>
+                    </tfoot>
                 </table>
-            </div>
-
+            @endforeach
 
         </div>
     </div>

@@ -5,7 +5,7 @@
 :root {
   scroll-behavior: smooth;
   --fontFamily: 'Poppins', sans-serif;
-  --mainColor: #05377F;
+  --mainColor: #4ba30d;
   --secondColor: #FFB413;
   --mainColorSecond: #ffe3e3;
   --secounderyColor: #fffcfc;
@@ -386,7 +386,7 @@ h6 {
 }
 .button-tambah:hover{
   transition: .5s ease-in;
-  background-color: #1a0767;
+  background-color: #076502;
   color:#fff;
 
 }

@@ -124,8 +124,8 @@
                           </td>
                           <td>{{ $loop->iteration }}</td>
                           <td>{{ $jabatan->nama_jabatan }}</td>
-                          <td>{{ $jabatan->gaji_pokok }}</td>
-                          <td>{{ $jabatan->tunjangan_jabatan }}</td>
+                          <td>Rp. {{ number_format( $jabatan->gaji_pokok,0,0) }}</td>
+                          <td>Rp. {{ number_format(  $jabatan->tunjangan_jabatan,0,0) }}</td>
                           <td>{{ $jabatan->status }}</td>
                           <td>{{ $jabatan->deskripsi }}</td>
                       </tr>

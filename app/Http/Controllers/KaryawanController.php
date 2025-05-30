@@ -13,7 +13,8 @@ class KaryawanController extends Controller
     {
         $jabatans = Jabatan::select('id', 'nama_jabatan')->get();
         $karyawans = Karyawan::with('jabatan', 'user')->get();
-        return view('karyawan.index', compact('karyawans', 'jabatans'));
+        $users = User::select('id', 'name')->get();
+        return view('karyawan.index', compact('karyawans', 'jabatans', 'users'));
     }
 
     public function create()
@@ -33,6 +34,19 @@ class KaryawanController extends Controller
             'jabatan_id' => 'required|exists:jabatans,id',
             'user_id' => 'nullable|exists:users,id',
             'foto' => 'nullable|image|max:2048',
+
+        ], [
+            'nama.required' => 'Nama karyawan harus diisi',
+            'nik.required' => 'NIK harus diisi',
+            'nik.unique' => 'NIK sudah terdaftar',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'no_hp.required' => 'Nomor HP harus diisi',
+            'no_hp.unique' => 'Nomor HP sudah terdaftar',
+            'jabatan_id.required' => 'Jabatan harus dipilih',
+            'jabatan_id.exists' => 'Jabatan tidak ditemukan',
+            'foto.image' => 'File harus berupa gambar',
+            'foto.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
         $data = $request->all();
@@ -46,8 +60,15 @@ class KaryawanController extends Controller
         return redirect()->route('karyawan.index')->with('success', 'Karyawan berhasil ditambahkan');
     }
 
+    public function show(Karyawan $karyawan)
+    {
+        $karyawan->load('jabatan', 'user');
+        return view('karyawan.show', compact('karyawan'));
+    }
+
     public function edit(Karyawan $karyawan)
     {
+        $karyawan->load('jabatan', 'user');
         $jabatans = Jabatan::all();
         $users = User::all();
         return view('karyawan.edit', compact('karyawan', 'jabatans', 'users'));
@@ -63,6 +84,18 @@ class KaryawanController extends Controller
             'jabatan_id' => 'required|exists:jabatans,id',
             'user_id' => 'nullable|exists:users,id',
             'foto' => 'nullable|image|max:2048',
+        ], [
+            'nama.required' => 'Nama karyawan harus diisi',
+            'nik.required' => 'NIK harus diisi',
+            'nik.unique' => 'NIK sudah terdaftar',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'no_hp.required' => 'Nomor HP harus diisi',
+            'no_hp.unique' => 'Nomor HP sudah terdaftar',
+            'jabatan_id.required' => 'Jabatan harus dipilih',
+            'jabatan_id.exists' => 'Jabatan tidak ditemukan',
+            'foto.image' => 'File harus berupa gambar',
+            'foto.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
         $data = $request->all();

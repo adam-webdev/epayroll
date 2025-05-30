@@ -33,12 +33,12 @@
         <table width="100%" style="border: none;">
             <tr>
                 <td style="width: 25%; text-align: center;">
-                    <img src="{{ asset('assets/img/logo/logo-splatinum-1.png') }}" style="width: 150px;" alt="Logo">
+                    <img src="{{ asset('assets_home/img/logo/logo1.png') }}" style="width: 150px;" alt="Logo">
                 </td>
                 <td style="width: 75%; text-align: center;">
-                    <h1 style="margin: 0; font-size: 20px; font-weight: bold;">PT. Splatinum Skyreach Indonesia</h1>
-                    <p style="margin: 2px 0; font-size: 12px;">Kec. Rawalumbu, Bekasi Timur, Jawa Barat 17115</p>
-                    <p style="margin: 2px 0; font-size: 12px;">Telp: 0812 1415 5598 | Email: marketing@splatinum.co.id | Website: www.splatinum.co.id</p>
+                    <h1 style="margin: 0; font-size: 20px; font-weight: bold;">Yayasan Pendidikan Islam An-Nadwah</h1>
+                    <p style="margin: 2px 0; font-size: 12px;">Kec. Tambun Selatan, Bekasi, Jawa Barat 17115</p>
+                    <p style="margin: 2px 0; font-size: 12px;">Telp: 0812 1415 0000 | Email: annadwah@gmail | Website: www.annadwah.com</p>
                 </td>
             </tr>
         </table>

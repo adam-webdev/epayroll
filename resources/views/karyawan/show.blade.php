@@ -32,7 +32,7 @@
                         width="150" height="150" style="object-fit: cover;">
                 @endif
                 <h5 class="mt-3 fw-bold">{{ $karyawan->nama }}</h5>
-                <p class="text-muted mb-0">{{ $karyawan->jabatan ?? '-' }}</p>
+                <p class="text-muted mb-0">{{ $karyawan->jabatan->nama_jabatan ?? '-' }}</p>
             </div>
 
             <div class="row gy-4 mt-4">
@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-md-6">
                     <h6 class="text-muted">Jabatan</h6>
-                    <p class="fs-8">{{ $karyawan->jabatan ?? '-' }}</p>
+                    <p class="fs-8">{{ $karyawan->jabatan->nama_jabatan ?? '-' }}</p>
                 </div>
                 <div class="col-md-6">
                     <h6 class="text-muted">Tanggal Masuk</h6>
@@ -70,13 +70,17 @@
                 </div>
                 <div class="col-md-6">
                     <h6 class="text-muted">Gaji Pokok</h6>
-                    <p class="fs-8">{{ $karyawan->gaji_pokok ? number_format($karyawan->gaji_pokok,0,0) : '-' }}</p>
+                    <p class="fs-8">Rp. {{ $karyawan->jabatan->gaji_pokok ? number_format($karyawan->jabatan->gaji_pokok,0,0) : '-' }}</p>
                 </div>
                 <div class="col-md-6">
                     <h6 class="text-muted">Status Karyawan</h6>
-                    <p class="fs-8">{{ $karyawan->status ?? '-' }}</p>
+                    <p class="fs-8">{{ $karyawan->status_karyawan ?? '-' }}</p>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
+                    <h6 class="text-muted">Tunjangan Jabatan</h6>
+                    <p class="fs-8">{{ $karyawan->jabatan->tunjangan_jabatan ? number_format($karyawan->jabatan->tunjangan_jabatan,0,0) : '-' }}</p>
+                </div>
+                <div class="col-md-6">
                     <h6 class="text-muted">Alamat</h6>
                     <p class="fs-8">{{ $karyawan->alamat ?? '-' }}</p>
                 </div>

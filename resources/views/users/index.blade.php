@@ -63,9 +63,7 @@
               </div>
 
             <div class="text-center mt-4">
-              @role('admin')
               <button type="submit" class="btn button-tambah w-100  "> <i class="bi bi-database-fill-check"></i>Simpan</button>
-              @endrole
               <button type="button" class="btn btn-secondary w-100  mt-2" onclick="window.history.back(-1);"
 
               > <i class="bi bi-arrow-left-circle"></i>Kembali</button>

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\HariLibur;
 use App\Models\Karyawan;
-use App\Models\Kasbon;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +37,7 @@ class AbsensiController extends Controller
 
     public function create()
     {
-        $karyawans = Karyawan::where('status', 'Aktif')->get();
+        $karyawans = Karyawan::where('status_karyawan', 'Aktif')->get();
         return view('absensi.create', compact('karyawans'));
     }
 
@@ -53,21 +53,23 @@ class AbsensiController extends Controller
             'absensi' => 'required|array',
             'absensi.*.karyawan_id' => 'required',
             'absensi.*.status' => 'required|in:Hadir,Izin,Sakit,Alpha',
-            'absensi.*.telat' => 'nullable|integer',
             'absensi.*.keterangan' => 'nullable|string',
+        ], [
+            'tanggal.required' => 'Tanggal absensi harus diisi.',
+            'tanggal.date' => 'Format tanggal tidak valid.',
+            'absensi.required' => 'Data absensi harus diisi.',
+            'absensi.*.karyawan_id.required' => 'ID karyawan harus diisi.',
+            'absensi.*.status.required' => 'Status kehadiran harus dipilih.',
+            'absensi.*.status.in' => 'Status kehadiran tidak valid.',
+            'absensi.*.keterangan.string' => 'Keterangan harus berupa teks.',
         ]);
 
         foreach ($request->absensi as $item) {
-            if ($item['telat'] > 15) {
-                $telat = 15;
-            } else {
-                $telat =  $item['telat'];
-            }
+
             Absensi::create([
                 'karyawan_id' => $item['karyawan_id'],
                 'tanggal' => $request->tanggal,
                 'status_kehadiran' => $item['status'],        // pakai data dari form
-                'telat' => $telat,        // pakai data dari form
                 'keterangan' => $item['keterangan'] // pakai data dari form
             ]);
         }
@@ -96,14 +98,20 @@ class AbsensiController extends Controller
             'absensi' => 'required|array',
             'absensi.*.karyawan_id' => 'required',
             'absensi.*.status' => 'required|in:Hadir,Izin,Sakit,Alpha',
-            'absensi.*.telat' => 'nullable|integer',
             'absensi.*.keterangan' => 'nullable|string',
+        ], [
+            'tanggal.required' => 'Tanggal absensi harus diisi.',
+            'tanggal.date' => 'Format tanggal tidak valid.',
+            'absensi.required' => 'Data absensi harus diisi.',
+            'absensi.*.karyawan_id.required' => 'ID karyawan harus diisi.',
+            'absensi.*.status.required' => 'Status kehadiran harus dipilih.',
+            'absensi.*.status.in' => 'Status kehadiran tidak valid.',
+            'absensi.*.keterangan.string' => 'Keterangan harus berupa teks.',
         ]);
 
         foreach ($request->absensi as $item) {
             Absensi::where('tanggal', $id)->where('karyawan_id', $item['karyawan_id'])->update([
                 'status_kehadiran' => $item['status'],
-                'telat' => $item['telat'],
                 'keterangan' => $item['keterangan']
             ]);
         }
@@ -127,7 +135,7 @@ class AbsensiController extends Controller
     }
 
 
-    public function rekapabsensi(Request $request)
+    public function rekapabsensi0(Request $request)
     {
         $bulan = $request->input('bulan') ?? Carbon::now()->month;
         $tahun = $request->input('tahun') ?? Carbon::now()->year;
@@ -155,7 +163,6 @@ class AbsensiController extends Controller
 
         $rekap = [];
         foreach ($karyawans as $karyawan) {
-            $total_kasbon = 0;
             $data = [
                 'nama' => $karyawan->nama,
                 'karyawan_id' => $karyawan->id,
@@ -164,11 +171,6 @@ class AbsensiController extends Controller
 
             foreach ($weeks as $week) {
 
-                $kasbon_minggu = Kasbon::where('karyawan_id', $karyawan->id)
-                    ->whereBetween('tanggal', [$week['start'], $week['end']])
-                    ->sum('jumlah');
-
-                $total_kasbon += $kasbon_minggu;
 
                 $data['minggu'][] = [
                     'periode' => Carbon::parse($week['start'])->translatedFormat('l, d F Y') . ' s/d ' . Carbon::parse($week['end'])->translatedFormat('l, d F Y'),
@@ -191,20 +193,120 @@ class AbsensiController extends Controller
                         ->where('status_kehadiran', 'Alpha')
                         ->whereBetween('tanggal', [$week['start'], $week['end']])
                         ->count(),
-                    'telat' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->whereNotNull('telat')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->sum('telat'),
 
-                    'kasbon' => $kasbon_minggu, //  kasbon per minggu
+
                 ];
             }
-            $data['total_kasbon'] = $total_kasbon; // total kasbon sebulan per karyawan
             $rekap[] = $data;
         }
         // dd($rekap);
         return view('absensi.rekap', compact('rekap', 'weeks', 'bulan', 'tahun'));
     }
+    // public function rekapabsensi(Request $request)
+    // {
+    //     $bulan = $request->input('bulan') ?? Carbon::now()->month;
+    //     $tahun = $request->input('tahun') ?? Carbon::now()->year;
+
+    //     $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+    //     $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+    //     $karyawans = Karyawan::orderBy('nama')->get();
+
+    //     // Buat daftar tanggal per hari
+    //     $harian = [];
+    //     $currentDate = $startOfMonth->copy();
+    //     while ($currentDate <= $endOfMonth) {
+    //         $harian[] = $currentDate->format('Y-m-d');
+    //         $currentDate->addDay();
+    //     }
+
+    //     $rekap = [];
+    //     foreach ($karyawans as $karyawan) {
+    //         $data = [
+    //             'nama' => $karyawan->nama,
+    //             'karyawan_id' => $karyawan->id,
+    //             'harian' => [],
+    //         ];
+
+    //         foreach ($harian as $tanggal) {
+    //             $status = Absensi::where('karyawan_id', $karyawan->id)
+    //                 ->whereDate('tanggal', $tanggal)
+    //                 ->value('status_kehadiran') ?? '-';
+
+    //             $data['harian'][] = [
+    //                 'tanggal' => Carbon::parse($tanggal)->translatedFormat('l, d F Y'),
+    //                 'status' => $status
+    //             ];
+    //         }
+
+    //         $rekap[] = $data;
+    //     }
+
+    //     return view('absensi.rekap', compact('rekap', 'harian', 'bulan', 'tahun'));
+    // }
+    public function rekapabsensi(Request $request)
+    {
+        $bulan = $request->input('bulan') ?? Carbon::now()->month;
+        $tahun = $request->input('tahun') ?? Carbon::now()->year;
+
+        $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+        $karyawans = Karyawan::orderBy('nama')->get();
+
+        // Ambil data hari libur nasional dari DB berdasarkan tahun
+        $liburNasional = HariLibur::whereYear('tanggal', $tahun)
+            ->pluck('tanggal')
+            ->map(fn($d) => Carbon::parse($d)->toDateString())
+            ->toArray();
+
+        // Buat daftar tanggal per hari dengan info libur
+        $harian = [];
+        $currentDate = $startOfMonth->copy();
+        while ($currentDate <= $endOfMonth) {
+            $tanggalString = $currentDate->toDateString();
+            $harian[] = [
+                'tanggal' => $tanggalString,
+                'is_libur' => in_array($tanggalString, $liburNasional) || $currentDate->isSunday(),
+            ];
+            $currentDate->addDay();
+        }
+
+        $rekap = [];
+        foreach ($karyawans as $karyawan) {
+            $data = [
+                'nama' => $karyawan->nama,
+                'karyawan_id' => $karyawan->id,
+                'harian' => [],
+            ];
+
+            foreach ($harian as $hari) {
+                $status = Absensi::where('karyawan_id', $karyawan->id)
+                    ->whereDate('tanggal', $hari['tanggal'])
+                    ->value('status_kehadiran') ?? '-';
+
+                // Ubah status ke singkatan
+                $singkatan = match ($status) {
+                    'Hadir' => 'h',
+                    'Izin' => 'i',
+                    'Sakit' => 's',
+                    'Alpha' => 'a',
+                    default => '-'
+                };
+
+                $data['harian'][] = [
+                    'tanggal' => Carbon::parse($hari['tanggal'])->translatedFormat('l, d F Y'),
+                    'status' => $singkatan,
+                    'is_libur' => $hari['is_libur'],
+                ];
+            }
+
+            $rekap[] = $data;
+        }
+
+        return view('absensi.rekap', compact('rekap', 'harian', 'bulan', 'tahun'));
+    }
+
 
     public function grafikKehadiran(Request $request)
     {
@@ -286,80 +388,72 @@ class AbsensiController extends Controller
 
     public function postCetakPdf($param_bulan, $param_tahun)
     {
-        $bulan = (int) $param_bulan ?? Carbon::now()->month;
-        $tahun = (int) $param_tahun ?? Carbon::now()->year;
+        $bulan = $param_bulan ?? Carbon::now()->month;
+        $tahun = $param_tahun ?? Carbon::now()->year;
+
 
         $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
         $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
 
         $karyawans = Karyawan::orderBy('nama')->get();
 
-        // Hitung minggu dalam bulan
-        $weeks = [];
-        $current = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY); // Awal minggu Senin
-        while ($current <= $endOfMonth) {
-            $weekStart = $current->copy();
-            $weekEnd = $current->copy()->endOfWeek(Carbon::SUNDAY);
-            if ($weekEnd > $endOfMonth) $weekEnd = $endOfMonth;
+        // Ambil data hari libur nasional dari DB berdasarkan tahun
+        $liburNasional = HariLibur::whereYear('tanggal', $tahun)
+            ->pluck('tanggal')
+            ->map(fn($d) => Carbon::parse($d)->toDateString())
+            ->toArray();
 
-            $weeks[] = [
-                'start' => $weekStart->format('Y-m-d'),
-                'end' => $weekEnd->format('Y-m-d'),
+        // Buat daftar tanggal per hari dengan info libur
+        $harian = [];
+        $currentDate = $startOfMonth->copy();
+        while ($currentDate <= $endOfMonth) {
+            $tanggalString = $currentDate->toDateString();
+            $harian[] = [
+                'tanggal' => $tanggalString,
+                'is_libur' => in_array($tanggalString, $liburNasional) || $currentDate->isSunday(),
             ];
-
-            $current->addWeek();
+            $currentDate->addDay();
         }
 
         $rekap = [];
         foreach ($karyawans as $karyawan) {
-            $total_kasbon = 0;
-
             $data = [
                 'nama' => $karyawan->nama,
                 'karyawan_id' => $karyawan->id,
-                'minggu' => [],
+                'harian' => [],
             ];
 
-            foreach ($weeks as $week) {
-                $kasbon_minggu = Kasbon::where('karyawan_id', $karyawan->id)
-                    ->whereBetween('tanggal', [$week['start'], $week['end']])
-                    ->sum('jumlah');
+            foreach ($harian as $hari) {
+                $status = Absensi::where('karyawan_id', $karyawan->id)
+                    ->whereDate('tanggal', $hari['tanggal'])
+                    ->value('status_kehadiran') ?? '-';
 
-                $total_kasbon += $kasbon_minggu;
-                $data['minggu'][] = [
-                    'periode' => Carbon::parse($week['start'])->translatedFormat('l, d F Y') . ' s/d ' . Carbon::parse($week['end'])->translatedFormat('l, d F Y'),
-                    'hadir' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->where('status_kehadiran', 'Hadir')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->count(),
+                // Ubah status ke singkatan
+                $singkatan = match ($status) {
+                    'Hadir' => 'h',
+                    'Izin' => 'i',
+                    'Sakit' => 's',
+                    'Alpha' => 'a',
+                    default => '-'
+                };
 
-                    'izin' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->where('status_kehadiran', 'Izin')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->count(),
-
-                    'sakit' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->where('status_kehadiran', 'Sakit')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->count(),
-
-                    'alpha' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->where('status_kehadiran', 'Alpha')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->count(),
-                    'telat' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->whereNotNull('telat')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->sum('telat'),
-                    'kasbon' => $kasbon_minggu, //  kasbon per minggu
+                $data['harian'][] = [
+                    'tanggal' => Carbon::parse($hari['tanggal'])->translatedFormat('l, d F Y'),
+                    'status' => $singkatan,
+                    'is_libur' => $hari['is_libur'],
                 ];
             }
-            $data['total_kasbon'] = $total_kasbon; // total kasbon
+
             $rekap[] = $data;
         }
-        // Generate PDF
-        $pdf = PDF::loadView('absensi.printabsen', compact('rekap', 'weeks', 'bulan', 'tahun'))->setPaper('A4');
 
+        // Generate PDF
+        $pdf = PDF::loadView('absensi.printabsen', compact('rekap', 'bulan', 'tahun', 'harian'))->setPaper('A4', 'landscape');
+        $pdf->setOptions([
+            'defaultFont' => 'sans-serif',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+        ]);
         // Opsi download atau stream
         return $pdf->stream('rekap-absensi-' . $bulan . '-' . $tahun . '.pdf');
         // atau return $pdf->stream(); untuk preview di browser
@@ -396,7 +490,6 @@ class AbsensiController extends Controller
 
         $rekap = [];
         foreach ($karyawans as $karyawan) {
-            $total_kasbon = 0;
 
             $data = [
                 'nama' => $karyawan->nama,
@@ -405,11 +498,6 @@ class AbsensiController extends Controller
             ];
 
             foreach ($weeks as $week) {
-                $kasbon_minggu = Kasbon::where('karyawan_id', $karyawan->id)
-                    ->whereBetween('tanggal', [$week['start'], $week['end']])
-                    ->sum('jumlah');
-
-                $total_kasbon += $kasbon_minggu;
                 $data['minggu'][] = [
                     'periode' => Carbon::parse($week['start'])->translatedFormat('l, d F Y') . ' s/d ' . Carbon::parse($week['end'])->translatedFormat('l, d F Y'),
                     'hadir' => Absensi::where('karyawan_id', $karyawan->id)
@@ -431,14 +519,9 @@ class AbsensiController extends Controller
                         ->where('status_kehadiran', 'Alpha')
                         ->whereBetween('tanggal', [$week['start'], $week['end']])
                         ->count(),
-                    'telat' => Absensi::where('karyawan_id', $karyawan->id)
-                        ->whereNotNull('telat')
-                        ->whereBetween('tanggal', [$week['start'], $week['end']])
-                        ->sum('telat'),
-                    'kasbon' => $kasbon_minggu, //  kasbon per minggu
+
                 ];
             }
-            $data['total_kasbon'] = $total_kasbon; // total kasbon
 
             $rekap[] = $data;
         }
@@ -451,21 +534,21 @@ class AbsensiController extends Controller
 
         // Header Perusahaan (Baris 1-3)
         $sheet->mergeCells('A1:I1');
-        $sheet->setCellValue('A1', 'PT. Splatinum Skyreach Indonesia');
+        $sheet->setCellValue('A1', 'Yayasan Pendidikan Islam An-Nadwah');
         $sheet->getStyle('A1')->getFont()
             ->setBold(true)
             ->setSize(16)
             ->setName('Arial');
 
         $sheet->mergeCells('A2:I2');
-        $sheet->setCellValue('A2', 'Kec. Rawalumbu, Bekasi Timur, Jawa Barat 17115');
+        $sheet->setCellValue('A2', 'Kec. Tambun Selatan, Bekasi Timur, Jawa Barat 17510');
         $sheet->getStyle('A2')->getFont()
             ->setBold(false)
             ->setSize(12);
 
 
         $sheet->mergeCells('A3:I3');
-        $sheet->setCellValue('A3', 'Telp: 0812 1415 5598 | Email: marketing@splatinum.co.id | Website: www.splatinum.co.id');
+        $sheet->setCellValue('A3', 'Telp: 0812 1415 5598 | Email: annadwah@gmail.com | Website: www.annadwah.com');
         $sheet->getStyle('A3')->getFont()
             ->setBold(false)
             ->setSize(10);
@@ -490,7 +573,7 @@ class AbsensiController extends Controller
         $sheet->setCellValue('A6', '');
 
         // Header Kolom Tabel (Baris 7) - Kolom A untuk No
-        $headers = ['No', 'Nama Karyawan', 'Periode Minggu', 'Hadir', 'Izin', 'Sakit', 'Alpha', 'Telat', 'Kasbon'];
+        $headers = ['No', 'Nama Karyawan', 'Periode Minggu', 'Hadir', 'Izin', 'Sakit', 'Alpha'];
         $sheet->fromArray($headers, null, 'A7');
 
         // Style untuk header tabel
@@ -523,8 +606,6 @@ class AbsensiController extends Controller
             $totalIzin = 0;
             $totalSakit = 0;
             $totalAlpha = 0;
-            $totalTelat = 0;
-            $totalKasbon = 0;
 
             foreach ($data['minggu'] as $minggu) {
                 // Nomor urut
@@ -537,16 +618,12 @@ class AbsensiController extends Controller
                 $sheet->setCellValue('E' . $row, $minggu['izin']);
                 $sheet->setCellValue('F' . $row, $minggu['sakit']);
                 $sheet->setCellValue('G' . $row, $minggu['alpha']);
-                $sheet->setCellValue('H' . $row, $minggu['telat']);
-                $sheet->setCellValue('I' . $row, $minggu['kasbon']);
 
                 // Akumulasi
                 $totalHadir += $minggu['hadir'];
                 $totalIzin += $minggu['izin'];
                 $totalSakit += $minggu['sakit'];
                 $totalAlpha += $minggu['alpha'];
-                $totalTelat += $minggu['telat'];
-                $totalKasbon += $minggu['kasbon'];
 
                 $row++;
                 $no++;
@@ -561,8 +638,6 @@ class AbsensiController extends Controller
             $sheet->setCellValue('E' . $row, $totalIzin);
             $sheet->setCellValue('F' . $row, $totalSakit);
             $sheet->setCellValue('G' . $row, $totalAlpha);
-            $sheet->setCellValue('H' . $row, $totalTelat);
-            $sheet->setCellValue('I' . $row, $totalKasbon);
 
             // Format bold untuk baris total
             $sheet->getStyle("A$row:I$row")->getFont()->setBold(true);

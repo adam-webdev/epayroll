@@ -96,14 +96,22 @@
                     </div>
 
                     <div class="col-md-4 mt-2">
-                        <div class="form-floating">
-                            <input name="jabatan" type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" placeholder="Jabatan" value="{{ old('jabatan', $karyawan->jabatan) }}">
-                            <label for="jabatan">Jabatan</label>
-                            @error('jabatan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                      <div class="form-floating">
+                        <select name="jabatan_id" class="form-select @error('jabatan_id') is-invalid @enderror" id="jabatan_id">
+                          <option value="" disabled selected>Pilih Jabatan</option>
+                          @foreach($jabatans as $jabatan)
+                            <option value="{{ $jabatan->id }}" {{ old('jabatan_id', $karyawan->jabatan_id) == $jabatan->id ? 'selected' : '' }}>
+                              {{ $jabatan->nama_jabatan }}
+                            </option>
+                          @endforeach
+                        </select>
+                        <label for="jabatan_id">Jabatan</label>
+                        @error('jabatan_id')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                      </div>
                     </div>
+
 
                     <div class="col-md-4 mt-2">
                         <div class="form-floating">
@@ -156,16 +164,6 @@
 
                     <div class="col-md-4 mt-2">
                         <div class="form-floating">
-                            <input name="gaji_pokok" type="number" class="form-control @error('gaji_pokok') is-invalid @enderror" id="gaji_pokok" placeholder="Gaji Pokok" value="{{ old('gaji_pokok', $karyawan->gaji_pokok) }}">
-                            <label for="gaji_pokok">Gaji Pokok</label>
-                            @error('gaji_pokok')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 mt-2">
-                        <div class="form-floating">
                             <select name="status" class="form-select @error('status') is-invalid @enderror" id="status">
                                 <option value="Aktif" {{ old('status', $karyawan->status) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                 <option value="Non Aktif" {{ old('status', $karyawan->status) == 'Non Aktif' ? 'selected' : '' }}>Non Aktif</option>
@@ -175,6 +173,22 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                    </div>
+
+                    <div class="col-md-4 mt-2">
+                      <div class="form-floating">
+                        <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" id="user_id">
+                          @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ old('user_id', $karyawan->user_id ?? '') == $user->id ? 'selected' : '' }}>
+                              {{ $user->name }}
+                            </option>
+                          @endforeach
+                        </select>
+                        <label for="user_id">User Akun</label>
+                        @error('user_id')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                      </div>
                     </div>
 
                     <div class="col-md-8 mt-2">
@@ -204,7 +218,6 @@
                   </div>
                 </div>
 
-                @role('admin')
                 <div class="row">
                     <div class="col-md-4">
                         <div class="d-flex text-center mt-4">
@@ -212,7 +225,6 @@
                         </div>
                     </div>
                 </div>
-                @endrole
             </form>
           <!-- End Floating Labels Form -->
 
