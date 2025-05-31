@@ -5,6 +5,7 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\GajiController;
+use App\Http\Controllers\HariLibur;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KasbonController;
@@ -47,12 +48,20 @@ Route::group(['middleware' => 'auth'], function () {
     // Jabatan
     Route::resource('jabatan', JabatanController::class);
 
-
     // Potongan
     Route::resource('potongan', PotonganController::class);
 
     // Gaji
-    Route::resource('gaji', GajiController::class);
+    // Route::resource('gaji', GajiController::class);
+    Route::post('/gaji/generate', [GajiController::class, 'generateGaji'])->name('gaji.generate');
+
+    Route::get('/gaji', [GajiController::class, 'index'])->name('gaji.index');
+    Route::get('/gaji/{bulan}/{tahun}', [GajiController::class, 'show'])->name('gaji.show');
+    Route::get('/gaji/{bulan}/{tahun}/edit', [GajiController::class, 'edit'])->name('gaji.edit');
+    Route::delete('/gaji/{bulan}/{tahun}', [GajiController::class, 'destroy'])->name('gaji.destroy');
+
+    //harilibur
+    Route::resource('harilibur', HariLibur::class);
 });
 
 

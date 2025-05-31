@@ -11,7 +11,7 @@ class GajiPotongan extends Model
     protected $fillable = [
         'gaji_id',
         'potongan_id',
-        'jumlah',
+        'jumlah_potongan',
     ];
 
     public function gaji()

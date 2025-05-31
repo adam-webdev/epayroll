@@ -16,12 +16,10 @@ class Gaji extends Model
         'potongan',
         'gaji_bersih',
         'status',
-        'tanggal_input'
+        'tanggal_input',
+        'total_potongan'
     ];
-    protected $casts = [
-        'bulan' => 'date',
-        'tahun' => 'date',
-    ];
+
     public function karyawan()
     {
         return $this->belongsTo(Karyawan::class);

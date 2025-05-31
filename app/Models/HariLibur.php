@@ -15,6 +15,9 @@ class HariLibur extends Model
         'tahun',
     ];
 
+    public $casts = [
+        'tanggal' => 'date',
+    ];
     public function gajis()
     {
         return $this->hasMany(Gaji::class);

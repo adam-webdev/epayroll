@@ -63,7 +63,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('karyawan_id')->constrained()->onDelete('cascade');
             $table->string('bulan'); // Contoh: 'Mei'
-            $table->year('tahun');   // Contoh: 2025
+            $table->string('tahun');   // Contoh: 2025
             $table->string('gaji_pokok')->default('0');
             $table->string('tunjangan')->default('0')->nullable();
             $table->string('total_potongan')->default('0')->nullable();

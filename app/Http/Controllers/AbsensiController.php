@@ -47,6 +47,10 @@ class AbsensiController extends Controller
             return redirect()->back()->with('error', 'Absensi untuk tanggal ini sudah ada.');
         }
 
+        $harilibur = HariLibur::where('tanggal', $request->tanggal)->exists();
+        if ($harilibur) {
+            return redirect()->back()->with('error', 'Tanggal ini adalah hari libur nasional, tidak perlu absensi.');
+        }
 
         $request->validate([
             'tanggal' => 'required|date',

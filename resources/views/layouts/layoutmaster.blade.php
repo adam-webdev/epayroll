@@ -259,6 +259,11 @@
               <i class="bx bx-notepad" style="font-size: 14px;"></i><span>Potongan</span>
             </a>
           </li>
+          <li>
+            <a href="{{route('harilibur.index')}}">
+              <i class="bx  bx-calendar-check" style="font-size: 14px;"></i><span>Hari Libur</span>
+            </a>
+          </li>
         </ul>
       </li>
 
@@ -275,9 +280,9 @@
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="{{route('gaji.index')}}">
              <i class='bx bxs-donate-heart' style="font-size: 14px;"></i>
-             <span>Kasbon</span>
+             <span>Gaji</span>
             </a>
           </li>
           <li>
