@@ -46,7 +46,7 @@
                       <div class="col-md-3">
                           <label for="">Submit :</label>
                           <div class=" d-flex gap-2">
-                              <button type="submit" name="export" value="pdf" class="btn btn-primary ">
+                              <button type="submit" name="export" value="pdf" class="btn button-tambah ">
                                   <i class="bi bi-gear-fill"></i> Generate
                               </button>
                               <!-- <button type="submit" name="export" value="excel" class="btn btn-success">

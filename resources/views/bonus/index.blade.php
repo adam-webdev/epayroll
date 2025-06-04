@@ -1,5 +1,5 @@
 @extends('layouts.layoutmaster')
-@section('title', 'Potongan')
+@section('title', 'Bonus')
 @section('content')
 @section('css')
 <style>
@@ -11,15 +11,15 @@
   <section class="section">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Input Data Potongan</h5>
-        <form class="g-3" method="post" id="form-potongan" action="{{ route('potongan.store') }}">
+        <h5 class="card-title">Input Data Bonus</h5>
+        <form class="g-3" method="post" id="form-potongan" action="{{ route('bonus.store') }}">
             @csrf
             <div class="row">
                 <div class="col-md-4 mt-2">
                     <div class="form-floating">
-                        <input name="nama_potongan" type="text" class="form-control @error('nama_potongan') is-invalid @enderror" id="nama_potongan" placeholder="Nama Potongan">
-                        <label for="nama_potongan">Nama Potongan (*)</label>
-                        @error('nama_potongan')
+                        <input name="nama_bonus" type="text" class="form-control @error('nama_bonus') is-invalid @enderror" id="nama_bonus" placeholder="Nama Potongan">
+                        <label for="nama_bonus">Nama Bonus (*)</label>
+                        @error('nama_bonus')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -40,8 +40,8 @@
 
                 <div class="col-md-4 mt-2">
                     <div class="form-floating">
-                        <input name="nilai" type="number" class="form-control @error('nilai') is-invalid @enderror" id="nilai" placeholder="Nilai Potongan">
-                        <label for="nilai">Nilai Potongan (*)</label>
+                        <input name="nilai" type="number" class="form-control @error('nilai') is-invalid @enderror" id="nilai" placeholder="Nilai Bonus">
+                        <label for="nilai">Nilai Bonus (*)</label>
                         @error('nilai')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -78,7 +78,7 @@
 
                 <div class="col-md-12 mt-2">
                     <div class="form-floating">
-                        <textarea name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" placeholder="Deskripsi Potongan" style="height: 100px"></textarea>
+                        <textarea name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" placeholder="Deskripsi Bonus" style="height: 100px"></textarea>
                         <label for="deskripsi">Deskripsi</label>
                         @error('deskripsi')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -90,7 +90,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="d-flex text-center mt-4">
-                        <button type="submit" class="btn button-tambah w-100"><i class='bx bxs-save'></i> Simpan Potongan</button>
+                        <button type="submit" class="btn button-tambah w-100"><i class='bx bxs-save'></i> Simpan Bonus</button>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between">
-          <h5 class="card-title">Data Potongan</h5>
+          <h5 class="card-title">Data Bonus</h5>
         </div>
 
         <div style="overflow-x: auto;">
@@ -114,7 +114,7 @@
               <tr>
                 <th>Aksi</th>
                 <th>No</th>
-                <th>Nama Potongan</th>
+                <th>Nama Bonus</th>
                 <th>Tipe</th>
                 <th>Nilai</th>
                 <th>Otomatis</th>
@@ -123,14 +123,14 @@
               </tr>
             </thead>
             <tbody>
-              @foreach ($potongans as $potongan)
+              @foreach ($bonus as $bonus)
                 <tr>
                   <td class="text-center" width="18%">
 
-                    <a title="Edit" href="{{ route('potongan.edit', $potongan->id) }}" class="btn btn-sm btn-edit-soft">
+                    <a title="Edit" href="{{ route('bonus.edit', $bonus->id) }}" class="btn btn-sm btn-edit-soft">
                       <i class='bx bxs-edit'></i>
                     </a>
-                    <form action="{{ route('potongan.destroy', $potongan->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus potongan ini?');">
+                    <form action="{{ route('bonus.destroy', $bonus->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus bonus ini?');">
                       @csrf
                       @method('DELETE')
                       <button type="submit" title="Hapus" class="btn btn-sm btn-delete-soft">
@@ -139,18 +139,18 @@
                     </form>
                   </td>
                   <td>{{ $loop->iteration }}</td>
-                  <td>{{ $potongan->nama_potongan }}</td>
-                  <td>{{ ucfirst($potongan->tipe) }}</td>
+                  <td>{{ $bonus->nama_bonus }}</td>
+                  <td>{{ ucfirst($bonus->tipe) }}</td>
                   <td>
-                    @if ($potongan->tipe == 'persentase')
-                      {{ $potongan->nilai }}%
+                    @if ($bonus->tipe == 'persentase')
+                      {{ $bonus->nilai }}%
                     @else
-                      Rp. {{ number_format($potongan->nilai, 0, ',', '.')  }}
+                      Rp. {{ number_format($bonus->nilai, 0, ',', '.')  }}
                     @endif
                   </td>
-                  <td>{{ $potongan->otomatis === 1 ? 'Ya' : 'Tidak' }}</td>
-                  <td>{{ $potongan->status }}</td>
-                  <td>{{ $potongan->deskripsi }}</td>
+                  <td>{{ $bonus->otomatis === 1 ? 'Ya' : 'Tidak' }}</td>
+                  <td>{{ $bonus->status }}</td>
+                  <td>{{ $bonus->deskripsi }}</td>
                 </tr>
               @endforeach
             </tbody>

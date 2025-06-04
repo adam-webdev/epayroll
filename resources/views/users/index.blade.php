@@ -55,6 +55,19 @@
                 @enderror
               </div>
               <div class="form-floating mt-3">
+
+                <select class="form-select @error('role') is-invalid @enderror" name="role" id="role" placeholder="role...">
+                  @foreach($roles as $role)
+                    <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                  @endforeach
+                </select>
+
+                <label for="role">Role</label>
+                  @error('role')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="form-floating mt-3">
                 <input name="password" type="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Inggris ">
                 <label for="password">Password</label>
                   @error('floating')
@@ -94,6 +107,7 @@
                   </th>
                   <th>Nama</th>
                   <th>Email</th>
+                  <th>Role</th>
                 </tr>
               </thead>
               <tbody>
@@ -117,6 +131,13 @@
                   <td>{{$loop->iteration}}</td>
                   <td>{{$user->name}}</td>
                   <td>{{$user->email}}</td>
+                  <td>
+                    @if($user->hasRole('admin'))
+                        <span class="badge bg-primary">Admin</span>
+                    @elseif($user->hasRole('karyawan'))
+                        <span class="badge bg-success">Karyawan</span>
+                    @endif
+                    </td>
                 </tr>
                 @endforeach
               </tbody>

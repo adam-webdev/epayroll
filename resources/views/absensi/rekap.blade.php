@@ -1,7 +1,7 @@
 @extends('layouts.layoutmaster')
 @section('title', 'Data Rekap Absensi Karyawan')
 @section('css')
- <style>
+<style>
     /* Style default untuk desktop */
     table tr td, table tr th {
         font-size: 14px;
@@ -34,6 +34,39 @@
             font-size: 12px;
             padding: 6px 12px;
         }
+    }
+
+    /* Style untuk bagian ringkasan libur di bawah tabel */
+    .summary-section {
+        margin-top: 30px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        font-size: 0.9em; /* Ukuran font lebih kecil untuk ringkasan */
+    }
+    .summary-section h6 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+    .summary-section ul {
+        list-style: none; /* Hilangkan bullet point */
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+    .summary-section ul li {
+        margin-bottom: 5px;
+        line-height: 1.4;
+    }
+    .summary-section ul li .libur-date {
+        font-weight: bold;
+        color: #000;
+        margin-right: 5px;
+    }
+    .summary-section ul li .libur-name {
+        color: #dc3545; /* Warna merah untuk nama libur */
     }
 </style>
 
@@ -76,9 +109,9 @@
                     <thead >
                         <tr>
                             <th >Nama</th>
-                            @foreach($harian as $tanggal)
-                                <th class="{{ $tanggal['is_libur'] ? 'bg-danger text-white' : '' }}">
-                                    {{ \Carbon\Carbon::parse($tanggal['tanggal'])->format('d') }}
+                            @foreach($harian as $hari) {{-- Gunakan $hari bukan $tanggal --}}
+                                <th class="{{ $hari['is_libur'] ? 'bg-danger text-white' : '' }}">
+                                    {{ \Carbon\Carbon::parse($hari['tanggal'])->format('d') }}
                                 </th>
                             @endforeach
                         </tr>
@@ -96,6 +129,33 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            ---
+
+            {{-- Bagian Ringkasan Hari Libur --}}
+            <div class="summary-section">
+                <h6>Informasi Hari Libur Bulan Ini:</h6>
+                <ul>
+                    @php
+                        // Filter hanya tanggal yang benar-benar libur dan punya nama libur
+                        $liburDetected = collect($harian)->filter(function($item) {
+                            return $item['is_libur'] && $item['nama_libur'];
+                        })->unique('tanggal'); // Pastikan tidak ada duplikasi jika ada hari libur ganda
+
+                        // Sortir berdasarkan tanggal
+                        $liburDetected = $liburDetected->sortBy('tanggal');
+                    @endphp
+
+                    @forelse ($liburDetected as $libur)
+                        <li>
+                            <span class="libur-date">{{ \Carbon\Carbon::parse($libur['tanggal'])->translatedFormat('d F Y') }} ({{ \Carbon\Carbon::parse($libur['tanggal'])->translatedFormat('l') }}):</span>
+                            <span class="libur-name">{{ $libur['nama_libur'] }}</span>
+                        </li>
+                    @empty
+                        <li>Tidak ada hari libur nasional atau Hari Minggu yang terdeteksi di bulan ini.</li>
+                    @endforelse
+                </ul>
             </div>
 
 

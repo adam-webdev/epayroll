@@ -1,5 +1,5 @@
 @extends('layouts.layoutmaster')
-@section('title', 'Detail Jabatan')
+@section('title', 'Detail Bonus')
 @section('content')
 @section('css')
     <style>

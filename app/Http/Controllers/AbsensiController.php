@@ -248,6 +248,7 @@ class AbsensiController extends Controller
 
     //     return view('absensi.rekap', compact('rekap', 'harian', 'bulan', 'tahun'));
     // }
+
     public function rekapabsensi(Request $request)
     {
         $bulan = $request->input('bulan') ?? Carbon::now()->month;
@@ -256,28 +257,49 @@ class AbsensiController extends Controller
         $startOfMonth = Carbon::create($tahun, $bulan, 1)->startOfMonth();
         $endOfMonth = Carbon::create($tahun, $bulan, 1)->endOfMonth();
 
-        $karyawans = Karyawan::orderBy('nama')->get();
+        // Pastikan variabel $karyawans diinisialisasi di sini
+        $karyawans = Karyawan::orderBy('nama')->get(); // <--- BARIS INI YANG KURANG
 
         // Ambil data hari libur nasional dari DB berdasarkan tahun
-        $liburNasional = HariLibur::whereYear('tanggal', $tahun)
-            ->pluck('tanggal')
-            ->map(fn($d) => Carbon::parse($d)->toDateString())
+        $liburNasionalData = HariLibur::whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+            ->get()
+            ->mapWithKeys(fn($item) => [Carbon::parse($item->tanggal)->toDateString() => $item->nama])
             ->toArray();
 
-        // Buat daftar tanggal per hari dengan info libur
+        // Buat daftar tanggal per hari dengan info libur dan nama libur
         $harian = [];
         $currentDate = $startOfMonth->copy();
         while ($currentDate <= $endOfMonth) {
             $tanggalString = $currentDate->toDateString();
+            $namaLibur = null;
+            $isLibur = false;
+
+            if ($currentDate->isSunday()) {
+                $isLibur = true;
+                $namaLibur = 'Hari Minggu'; // Keterangan untuk hari Minggu
+            }
+
+            // Cek apakah ada di daftar hari libur nasional dari DB
+            if (isset($liburNasionalData[$tanggalString])) {
+                $isLibur = true;
+                // Jika sudah hari Minggu dan juga libur nasional, gabungkan keterangannya
+                if ($namaLibur) {
+                    $namaLibur .= ' & ' . $liburNasionalData[$tanggalString];
+                } else {
+                    $namaLibur = $liburNasionalData[$tanggalString];
+                }
+            }
+
             $harian[] = [
                 'tanggal' => $tanggalString,
-                'is_libur' => in_array($tanggalString, $liburNasional) || $currentDate->isSunday(),
+                'is_libur' => $isLibur,
+                'nama_libur' => $namaLibur, // Tambahkan nama libur di sini
             ];
             $currentDate->addDay();
         }
 
         $rekap = [];
-        foreach ($karyawans as $karyawan) {
+        foreach ($karyawans as $karyawan) { // Loop ini membutuhkan $karyawans
             $data = [
                 'nama' => $karyawan->nama,
                 'karyawan_id' => $karyawan->id,
@@ -302,6 +324,7 @@ class AbsensiController extends Controller
                     'tanggal' => Carbon::parse($hari['tanggal'])->translatedFormat('l, d F Y'),
                     'status' => $singkatan,
                     'is_libur' => $hari['is_libur'],
+                    'nama_libur' => $hari['nama_libur'], // Salin juga nama_libur ke array harian per karyawan
                 ];
             }
 

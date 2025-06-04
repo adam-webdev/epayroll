@@ -260,6 +260,11 @@
             </a>
           </li>
           <li>
+            <a href="{{route('bonus.index')}}">
+              <i class="bx bx-notepad" style="font-size: 14px;"></i><span>Bonus</span>
+            </a>
+          </li>
+          <li>
             <a href="{{route('harilibur.index')}}">
               <i class="bx  bx-calendar-check" style="font-size: 14px;"></i><span>Hari Libur</span>
             </a>
@@ -285,16 +290,39 @@
              <span>Gaji</span>
             </a>
           </li>
+
+
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#tables-nav1" data-bs-toggle="collapse" href="#">
+          <i class='bx bx-money-withdraw'></i>
+         <span>Transaksi</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="tables-nav1" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="#">
-              <i class="bx bxs-user-account" style="font-size: 14px;"></i><span>Stok Material</span>
+            <a href="{{route('absensi.index')}}">
+             <i class='bx bxs-notepad' style="font-size: 14px;"></i>
+             <span>Absensi</span>
             </a>
           </li>
+          <li>
+            <a href="{{route('gaji.index')}}">
+             <i class='bx bxs-donate-heart' style="font-size: 14px;"></i>
+             <span>Gaji</span>
+            </a>
+          </li>
+
 
         </ul>
       </li>
 
-
+      <li>
+        <a href="{{route('gaji.karyawan')}}">
+         <i class='bx bxs-donate-heart' style="font-size: 14px;"></i>
+         <span>Riwayat Gaji Karyawan</span>
+        </a>
+      </li>
 
       <!-- End Tables Nav -->
 

@@ -16,7 +16,7 @@ class SyncHariLibur extends Command
         $tahun = $this->argument('tahun');
         $url = "https://api-harilibur.vercel.app/api?year={$tahun}";
 
-        $this->info("Mengambil data libur tahun {$tahun}...");z
+        $this->info("Mengambil data libur tahun {$tahun}...");
         $response = Http::get($url);
 
         if (!$response->ok()) {

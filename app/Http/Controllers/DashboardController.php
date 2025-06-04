@@ -7,9 +7,18 @@ use App\Models\RawMaterial;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
+    public function testEmail()
+    {
+        Mail::raw('Ini adalah email uji coba.', function ($message) {
+            $message->to('adamdwimaulana2605@gmail.com')->subject('Uji Coba Mailtrap');
+        });
+        return "Email uji coba telah dikirim (ke Gmail).";
+    }
+
     public function index()
     {
         $latestMasuk = 0;

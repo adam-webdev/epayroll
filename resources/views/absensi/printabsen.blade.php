@@ -34,16 +34,13 @@
         font-size: 20px;
         font-weight: bold;
     }
-    @page {
-        margin: 10mm 15mm 10mm 15mm; /* atas kanan bawah kiri */
-    }
+
 
 
 </style>
     <hr>
    <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Data Absensi Bulan {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F') }} {{ $tahun }}</h4>
-
+       <h4>Data Absensi Bulan {{ $bulan }} {{ $tahun }}</h4>
         <br>
     </div>
     <div class="table-responsive">

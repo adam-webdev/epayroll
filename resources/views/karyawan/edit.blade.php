@@ -175,7 +175,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 mt-2">
+                    <!-- <div class="col-md-4 mt-2">
                       <div class="form-floating">
                         <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" id="user_id">
                           @foreach($users as $user)
@@ -189,7 +189,7 @@
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
-                    </div>
+                    </div> -->
 
                     <div class="col-md-8 mt-2">
                         <div class="form-floating">

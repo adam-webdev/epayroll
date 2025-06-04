@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public function index()
     {
         $user = User::all();
-        return view('users.index', compact('user'));
+        $roles = Role::all();
+        return view('users.index', compact('user', 'roles'));
     }
 
     public function create()
@@ -42,13 +44,14 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-        $user->assignRole('karyawan');
+        $user->assignRole($request->role ?? 'karyawan'); // Assign default role if not provided
         return redirect()->route('users.index')->with('success', 'User baru berhasil ditambahkan.');
     }
 
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        $roles = Role::all();
+        return view('users.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, User $user)
@@ -73,7 +76,9 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
         ];
-
+        if ($request->role) {
+            $user->syncRoles($request->role);
+        }
         if ($request->password) {
             $data['password'] = bcrypt($request->password);
         }

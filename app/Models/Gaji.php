@@ -17,7 +17,8 @@ class Gaji extends Model
         'gaji_bersih',
         'status',
         'tanggal_input',
-        'total_potongan'
+        'total_potongan',
+        'total_bonus',
     ];
 
     public function karyawan()
@@ -40,5 +41,9 @@ class Gaji extends Model
     public function gajiPotongans()
     {
         return $this->hasMany(GajiPotongan::class);
+    }
+    public function gajiBonuses()
+    {
+        return $this->hasMany(GajiBonus::class);
     }
 }

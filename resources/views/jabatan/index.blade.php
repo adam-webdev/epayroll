@@ -3,7 +3,12 @@
 @section('content')
 @section('css')
 <style>
-
+.encrypted-or-plain-cell {
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all; /* Lebih agresif untuk string Base64 */
+    max-width: 200px; /* Sesuaikan lebar maksimum */
+}
 </style>
 @endsection
 @include('sweetalert::alert')
@@ -90,6 +95,19 @@
           <div class="d-flex justify-content-between ">
             <h5 class="card-title">Data Jabatan</h5>
           </div>
+          <div class="mb-4 p-3 border rounded" style="background-color: #e3f2fd;">
+            <h5><i class='bx bx-key'></i> Kunci Dekripsi Admin</h5>
+            <p class="text-muted small">Masukkan <strong>KEY </strong> Anda untuk mendekripsi data sensitif Gaji Pokok, Tunjangan Jabatan</p>
+            <form action="{{ route('jabatan.decrypt') }}" method="post" id="decryption-form">
+              @csrf
+                <div class="input-group">
+                    <input type="password" id="adminDecryptionKey" name="admin_key" class="form-control" placeholder="Masukkan KEY Anda di sini" value="{{ $adminKey ?? '' }}">
+                    <button class="btn btn-success" type="submit" id="applyKeyButton"><i class='bx bx-check'></i> Terapkan Kunci</button>
+                        <a href="{{ route('jabatan.index') }}" class="btn btn-secondary ms-2" id="resetDecryptionButton"><i class='bx bx-x'></i> Reset Dekripsi</a>
+                </div>
+
+            </form>
+        </div>
           <!-- Table with stripped rows -->
           <div style="overflow-x: auto;">
             <table id="datatable" class="table table-responsive  table-striped" style="font-size: 12px;">
@@ -124,8 +142,8 @@
                           </td>
                           <td>{{ $loop->iteration }}</td>
                           <td>{{ $jabatan->nama_jabatan }}</td>
-                          <td>Rp. {{ number_format( $jabatan->gaji_pokok,0,0) }}</td>
-                          <td>Rp. {{ number_format(  $jabatan->tunjangan_jabatan,0,0) }}</td>
+                          <td  class="encrypted-or-plain-cell"> {{$jabatan->gaji_pokok}}</td>
+                          <td class="encrypted-or-plain-cell">  {{$jabatan->tunjangan_jabatan}}</td>
                           <td>{{ $jabatan->status }}</td>
                           <td>{{ $jabatan->deskripsi }}</td>
                       </tr>

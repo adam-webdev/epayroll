@@ -58,6 +58,11 @@
             color: #e74c3c; /* Warna merah untuk potongan */
         }
 
+        /* Warna untuk nominal bonus (baru) */
+        .item-value.bonus-amount {
+            color: #007bff; /* Warna biru untuk bonus, kamu bisa ubah */
+        }
+
         /* Styling untuk accordion header */
         .accordion-button {
             font-weight: 600;
@@ -80,13 +85,6 @@
             background-color: #ffffff;
             border-top: 1px solid #dee2e6;
         }
-
-        .encrypted-or-plain-cell {
-            white-space: normal;
-            word-wrap: break-word;
-            word-break: break-all; /* Lebih agresif untuk string Base64 */
-            max-width: 500px; /* Sesuaikan lebar maksimum */
-        }
     </style>
 @endsection
 
@@ -94,33 +92,18 @@
     <div class="card shadow rounded-4 p-4">
         <div class="container slip-gaji-content">
             <h4 class="mb-4 text-center" style="font-weight: 700; color: #2c3e50;">
-                Detail Gaji Bulan {{ date('F', mktime(0, 0, 0, $gajis->first()->bulan, 1)) }} Tahun {{ $gajis->first()->tahun }}
+                Detail Gaji Bulan {{ date('F', mktime(0, 0, 0, $gaji->first()->bulan, 1)) }} Tahun {{ $gaji->first()->tahun }}
             </h4>
             <p class="text-center text-muted mb-4" style="font-size: 0.9em;">
                 Informasi gaji terperinci untuk setiap tenaga pendidik dalam periode ini.
             </p>
 
-            <div class="mb-4 p-3 border rounded" style="background-color: #e3f2fd;">
-                <h5><i class='bx bx-key'></i> Kunci Dekripsi Admin</h5>
-                <p class="text-muted small">Masukkan <strong>KEY </strong> Anda untuk mendekripsi data sensitif Gaji</p>
-                <form action="{{ route('gaji.decrypt') }}" method="post" id="decryption-form">
-                  @csrf
-                    <div class="input-group">
-                        <input type="password" id="adminDecryptionKey" name="admin_key" class="form-control" placeholder="Masukkan KEY Anda di sini" value="{{ $adminKey ?? '' }}">
-                        <input type="hidden" name="bulan" value="{{ $bulan }}">
-                        <input type="hidden" name="tahun" value="{{ $tahun }}">
-                        <button class="btn btn-success" type="submit" id="applyKeyButton"><i class='bx bx-check'></i> Terapkan Kunci</button>
-                            <a href="{{ route('gaji.index') }}" class="btn btn-secondary ms-2" id="resetDecryptionButton"><i class='bx bx-x'></i> Reset Dekripsi</a>
-                    </div>
-
-                </form>
-            </div>
             <div class="accordion" id="gajiAccordion">
-                @foreach ($gajis as $item)
+                @foreach ($gaji as $item)
                 <div class="accordion-item mb-3 rounded-3 border">
-                    <h6 class="accordion-header "  id="heading{{ $item->id }}">
-                        <button class="accordion-button collapsed " type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $item->id }}" aria-expanded="false" aria-controls="collapse{{ $item->id }}">
-                            <i class='bx bxs-user me-2 '></i> {{ $item->karyawan->nama }} <span class="badge bg-secondary ms-3">{{ $item->karyawan->jabatan->nama_jabatan ?? 'Tidak Ada Jabatan' }}</span>
+                    <h6 class="accordion-header" id="heading{{ $item->id }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $item->id }}" aria-expanded="false" aria-controls="collapse{{ $item->id }}">
+                            <i class='bx bxs-user me-2'></i> {{ $item->karyawan->nama }} <span class="badge bg-secondary ms-3">{{ $item->karyawan->jabatan->nama_jabatan ?? 'Tidak Ada Jabatan' }}</span>
                         </button>
                     </h6>
                     <div id="collapse{{ $item->id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $item->id }}" data-bs-parent="#gajiAccordion">
@@ -129,7 +112,7 @@
                             <ul class="list-group mb-4">
                                 <li class="list-group-item">
                                     <span class="item-label"><i class='bx bx-user'></i> Nama</span>
-                                    <span class="item-value ">{{ $item->karyawan->nama }}</span>
+                                    <span class="item-value">{{ $item->karyawan->nama }}</span>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="item-label"><i class='bx bx-briefcase'></i> Jabatan</span>
@@ -146,18 +129,18 @@
                             <ul class="list-group mb-4">
                                 <li class="list-group-item">
                                     <span class="item-label"><i class='bx bx-money'></i> Gaji Pokok</span>
-                                    <span class="item-value encrypted-or-plain-cell">{{$item->gaji_pokok }}</span>
+                                    <span class="item-value">Rp {{ number_format($item->gaji_pokok, 0, ',', '.') }}</span>
                                 </li>
                                 <li class="list-group-item">
                                     <span class="item-label"><i class='bx bx-wallet-alt'></i> Tunjangan</span>
-                                    <span class="item-value encrypted-or-plain-cell">{{$item->tunjangan }}</span>
+                                    <span class="item-value">Rp {{ number_format($item->tunjangan, 0, ',', '.') }}</span>
                                 </li>
 
                                 {{-- Section for Bonuses --}}
                                 @if($item->gajiBonuses->isNotEmpty())
                                     <li class="list-group-item">
                                         <span class="item-label"><i class='bx bx-gift'></i> Total Bonus</span>
-                                        <span class="item-value bonus-amount"> {{ number_format($item->gajiBonuses->sum('jumlah_bonus'), 0, ',', '.') }}</span>
+                                        <span class="item-value bonus-amount">Rp {{ number_format($item->gajiBonuses->sum('jumlah_bonus'), 0, ',', '.') }}</span>
                                     </li>
                                     @foreach ($item->gajiBonuses as $bonusItem)
                                     <li class="list-group-item ps-4">
@@ -190,7 +173,7 @@
                             <ul class="list-group mb-4">
                                 <li class="list-group-item">
                                     <span class="item-label"><i class='bx bx-minus-circle'></i> Total Potongan</span>
-                                    <span class="item-value potongan-amount encrypted-or-plain-cell"> {{ $item->total_potongan }}</span>
+                                    <span class="item-value potongan-amount">Rp {{ number_format($item->total_potongan, 0, ',', '.') }}</span>
                                 </li>
                                 @forelse ($item->gajiPotongans as $potongan)
                                 <li class="list-group-item ps-4"> {{-- Kurangi padding-left untuk kesederhanaan --}}
@@ -199,20 +182,20 @@
                                 </li>
                                 @empty
                                 <li class="list-group-item ps-4">
-                                    <span class="item-label">Tidak ada potongan terperinci.</span>
+                                    <span class="item-label">Tidak ada rincian potongan.</span>
                                 </li>
                                 @endforelse
                             </ul>
 
                             <h6 class="text-end mt-4">
-                                **Gaji Bersih:** <span class="text-gaji-bersih encrypted-or-plain-cell"> {{ $item->gaji_bersih }}</span>
+                                **Gaji Bersih:** <span class="text-gaji-bersih">Rp {{ number_format($item->gaji_bersih, 0, ',', '.') }}</span>
                             </h6>
 
                             <div class="d-flex justify-content-end mt-4">
                                 @if (isset($item->slipGaji) && $item->slipGaji->file_path)
                                     <a href="{{ asset('storage/' . $item->slipGaji->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class='bx bx-download me-1'></i> Unduh Slip Gaji</a>
                                 @else
-                                    <span class="text-muted fst-italic encrypted-or-plain-cell" style="font-size: 0.85em;">{{$item->karyawan->email}}</span>
+                                    <span class="text-muted fst-italic" style="font-size: 0.85em;">Slip gaji belum tersedia.</span>
                                 @endif
                             </div>
                         </div>
