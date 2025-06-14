@@ -33,7 +33,7 @@
         <table width="100%" style="border: none;">
             <tr>
                 <td style="width: 25%; text-align: center;">
-                    <img src="{{ asset('assets_home/img/logo/logo1.png') }}" style="width: 150px;" alt="Logo">
+                    <img src="{{ url('assets_home/img/logo/logo1.png') }}" style="width: 150px;" alt="Logo">
                 </td>
                 <td style="width: 75%; text-align: center;">
                     <h1 style="margin: 0; font-size: 20px; font-weight: bold;">Yayasan Pendidikan Islam An-Nadwah</h1>

@@ -218,11 +218,11 @@
                 </div>
             </div> {{-- End accordion --}}
 
-              <div class="d-flex justify-content-end mt-4">
+            <div class="d-flex justify-content-end mt-4">
                 <a href="{{ route('gaji.downloadSlipGajiPdf', ['nomor_slip' => $slipGaji->nomor_slip]) }}" target="_blank" class="btn btn-primary me-2">
                     <i class='bx bx-download me-1'></i> Unduh Slip Gaji PDF
                 </a>
-                <a href="{{ url()->previous() }}" class="btn btn-secondary"><i class='bx bx-arrow-back'></i> Kembali</a>
+                <!-- <a href="{{ url()->previous() }}" class="btn btn-secondary"><i class='bx bx-arrow-back'></i> Kembali</a> -->
             </div>
 
         </div>

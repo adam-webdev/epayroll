@@ -60,12 +60,7 @@ class KaryawanController extends Controller
 
             $karyawans->map(function ($karyawan) use ($adminEncrypter) {
                 // Dekripsi nama
-                try {
-                    $karyawan->nama = $adminEncrypter->decryptString($karyawan->nama);
-                } catch (DecryptException $e) {
-                    $karyawan->nama = '[Dekripsi Gagal]';
-                    Log::warning("Dekripsi nama karyawan ID {$karyawan->id} gagal: " . $e->getMessage());
-                }
+
 
                 // Dekripsi nik
                 try {
@@ -154,9 +149,14 @@ class KaryawanController extends Controller
             'foto.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
+        if ($request->email) {
+            $email = $request->email;
+        } else {
+            $email = $request->nama . '@gmail.com'; // Pastikan null jika input kosong
+        }
         $user = User::create([
             'name' => $request->nama,
-            'email' => $request->email,
+            'email' => $email,
             'password' => bcrypt('password'), // Ganti dengan password default atau logika lain
         ]);
 
@@ -202,15 +202,19 @@ class KaryawanController extends Controller
         $karyawan->load('jabatan', 'user');
         // Saat show, Anda mungkin ingin langsung mendekripsi untuk tampilan detail
         try {
-            $karyawan->nik_plain = Crypt::decryptString($karyawan->nik);
-            $karyawan->email_plain = $karyawan->email ? Crypt::decryptString($karyawan->email) : null;
-            $karyawan->no_hp_plain = $karyawan->no_hp ? Crypt::decryptString($karyawan->no_hp) : null;
-            $karyawan->alamat_plain = $karyawan->alamat ? Crypt::decryptString($karyawan->alamat) : null;
+            $karyawan->nik = Crypt::decryptString($karyawan->nik);
+            $karyawan->email = $karyawan->email ? Crypt::decryptString($karyawan->email) : null;
+            $karyawan->jabatan->tunjangan_jabatan = $karyawan->jabatan->tunjangan_jabatan ? Crypt::decryptString($karyawan->jabatan->tunjangan_jabatan) : null;
+            $karyawan->jabatan->gaji_pokok = $karyawan->jabatan->gaji_pokok ? Crypt::decryptString($karyawan->jabatan->gaji_pokok) : null;
+            $karyawan->no_hp = $karyawan->no_hp ? Crypt::decryptString($karyawan->no_hp) : null;
+            $karyawan->alamat = $karyawan->alamat ? Crypt::decryptString($karyawan->alamat) : null;
         } catch (DecryptException $e) {
-            $karyawan->nik_plain = '[Error Dekripsi NIK]';
-            $karyawan->email_plain = '[Error Dekripsi Email]';
-            $karyawan->no_hp_plain = '[Error Dekripsi No. HP]';
-            $karyawan->alamat_plain = '[Error Dekripsi Alamat]';
+            $karyawan->nik = '[Error Dekripsi NIK]';
+            $karyawan->jabatan->tunjangan_jabatan = '[Error Dekripsi Tunjangan Jabatan]';
+            $karyawan->jabatan->gaji_pokok = '[Error Dekripsi Gaji Pokok]';
+            $karyawan->email = '[Error Dekripsi Email]';
+            $karyawan->no_hp = '[Error Dekripsi No. HP]';
+            $karyawan->alamat = '[Error Dekripsi Alamat]';
             \Log::error('Dekripsi data karyawan gagal di halaman show untuk ID: ' . $karyawan->id . '. Error: ' . $e->getMessage());
         }
         return view('karyawan.show', compact('karyawan'));
@@ -226,6 +230,7 @@ class KaryawanController extends Controller
         try {
             $karyawan->nik = Crypt::decryptString($karyawan->nik);
             $karyawan->email = $karyawan->email ? Crypt::decryptString($karyawan->email) : null;
+
             $karyawan->no_hp = $karyawan->no_hp ? Crypt::decryptString($karyawan->no_hp) : null;
             $karyawan->alamat = $karyawan->alamat ? Crypt::decryptString($karyawan->alamat) : null;
         } catch (DecryptException $e) {
@@ -264,6 +269,8 @@ class KaryawanController extends Controller
 
         $data = $request->all();
 
+
+        $karyawan->user_id = $request->user_id; // Update user_id jika ada
         // ---- ENKRIPSI DATA SEBELUM DIUPDATE ----
         try {
             $data['nik'] = Crypt::encryptString($request->nik);
@@ -314,6 +321,7 @@ class KaryawanController extends Controller
     public function riwayatGaji()
     {
         $loggedInUser = Auth::user();
+
         // Pastikan user sudah login
         if (!$loggedInUser) {
             // Tangani kasus user belum login, mungkin redirect ke halaman login
@@ -325,7 +333,6 @@ class KaryawanController extends Controller
         $karyawan = Karyawan::with('user', 'jabatan') // Eager load relasi yang diperlukan
             ->where('user_id', $loggedInUser->id)
             ->first();
-
         try {
             // Dekripsi data karyawan jika diperlukan
             if ($karyawan) {

@@ -88,13 +88,13 @@
                 @foreach ($gajis as $gaji)
                 <tr>
                   <td class="text-center">
-                    <a title="Detail" href="{{ route('gaji.show', [$gaji->bulan, $gaji->tahun]) }}" class="btn btn-sm btn-detail-soft">
+                    <a title="Detail" href="{{ route('gaji.show', [$gaji['bulan'], $gaji['tahun']]) }}" class="btn btn-sm btn-detail-soft">
                       <i class='bx bx-show'></i>
                     </a>
-                    <a title="Edit" href="{{ route('gaji.edit', [$gaji->bulan, $gaji->tahun]) }}" class="btn btn-sm btn-edit-soft">
+                    <a title="Edit" href="{{ route('gaji.edit', [$gaji['bulan'], $gaji['tahun']]) }}" class="btn btn-sm btn-edit-soft">
                       <i class='bx bxs-edit'></i>
                     </a>
-                    <form action="{{ route('gaji.destroy', [$gaji->bulan, $gaji->tahun]) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda Yakin?');">
+                    <form action="{{ route('gaji.destroy', [$gaji['bulan'], $gaji['tahun']]) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda Yakin?');">
                       @csrf
                       @method('DELETE')
                       <button type="submit" title="Hapus" class="btn btn-sm btn-delete-soft">
@@ -104,13 +104,13 @@
                   </td>
 
                   <td>{{ $loop->iteration }}</td>
-                  <td>{{ date('F', mktime(0, 0, 0, $gaji->bulan, 1)) }}</td>
-                  <td>{{ $gaji->tahun }}</td>
-                  <td>Rp. {{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
+                  <td>{{ date('F', mktime(0, 0, 0, $gaji['bulan'], 1)) }}</td>
+                  <td>{{ $gaji['tahun'] }}</td>
+                  <td>Rp. {{ number_format($gaji['total_gaji'], 0, ',', '.') }}</td>
                   <td>
-                    @if ($gaji->status == "Draft")
+                    @if ($gaji['status'] == "Draft")
                       <span class="badge bg-secondary">Draft</span>
-                    @elseif ($gaji->status === "Terkirim")
+                    @elseif ($gaji['status'] === "Terkirim")
                       <span class="badge bg-success">Terkirim</span>
                     @endif
                   </td>

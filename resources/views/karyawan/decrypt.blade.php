@@ -69,21 +69,22 @@
               <tbody>
                   @foreach ($karyawans as $karyawan)
                       <tr id="karyawan-row-{{ $karyawan->id }}">
-                          <td class="text-center" width="18%">
-                              <a title="Detail" href="{{ route('karyawan.show', $karyawan->id) }}" class="btn btn-sm btn-info">
-                                  <i class='bx bx-show'></i>
-                              </a>
-                              <a title="Edit" href="{{ route('karyawan.edit', $karyawan->id) }}" class="btn btn-sm btn-warning">
-                                  <i class='bx bxs-edit'></i>
-                              </a>
-                              <form action="{{ route('karyawan.destroy', $karyawan->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda Yakin?');">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button type="submit" title="Hapus" class="btn btn-sm btn-danger">
-                                      <i class='bx bxs-trash'></i>
-                                  </button>
-                              </form>
-                          </td>
+
+                        <td class="text-center" width="18%">
+                            <a title="Detail" href="{{ route('karyawan.show', $karyawan->id) }}" class="btn btn-sm btn-detail-soft">
+                                <i class='bx bx-show'></i>
+                            </a>
+                            <a title="Edit" href="{{ route('karyawan.edit', $karyawan->id) }}" class="btn btn-sm btn-edit-soft">
+                                <i class='bx bxs-edit'></i>
+                            </a>
+                            <form action="{{ route('karyawan.destroy', $karyawan->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda Yakin?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" title="Hapus" class="btn btn-sm btn-delete-soft">
+                                    <i class='bx bxs-trash'></i>
+                                </button>
+                            </form>
+                        </td>
                           <td>{{ $loop->iteration }}</td>
                           <td class="encrypted-or-plain-cell">{{ $karyawan->nama }}</td>
                           <td class="encrypted-or-plain-cell">{{ $karyawan->nik }}</td>

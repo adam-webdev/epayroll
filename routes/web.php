@@ -31,13 +31,12 @@ Route::get('/register', function () {
 });
 
 Auth::routes();
-Route::group(['middleware' => 'auth'], function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::group(['middleware' => ['auth']], function () {
+    // Daftar route khusus admin
+
     Route::resource('users', UserController::class);
     Route::resource('karyawan', KaryawanController::class);
 
-    Route::get('/riwayat-gaji-karyawan', [KaryawanController::class, 'riwayatGaji'])->name('gaji.karyawan');
     // Endpoint API untuk dekripsi banyak field dengan kunci admin
     // Route::post('/decrypt-fields-with-key', [KaryawanController::class, 'decryptMultipleFields'])->name('decrypt.multiple.fields');
     // Route untuk memproses kunci admin (POST request)
@@ -95,6 +94,15 @@ Route::group(['middleware' => 'auth'], function () {
     //harilibur
     Route::resource('harilibur', HariLibur::class);
 });
+Route::group(
+    ['middleware' => ['auth']],
+    function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/riwayat-gaji-karyawan', [KaryawanController::class, 'riwayatGaji'])->name('gaji.karyawan');
+    }
+);
 
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

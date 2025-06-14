@@ -210,6 +210,13 @@
                                     </h6>
 
                                 </div>
+                                <div class="d-flex justify-content-end mt-4 mb-4">
+                                    <a href="{{ route('gaji.downloadSlipGajiPdf', ['nomor_slip' => $gajiItem->slipGaji->nomor_slip]) }}" target="_blank" class="btn button-tambah me-2">
+                                        <i class='bx bx-download me-1'></i> Unduh Slip Gaji PDF
+                                    </a>
+                                    <!-- <a href="{{ url()->previous() }}" class="btn btn-secondary"><i class='bx bx-arrow-back'></i> Kembali</a> -->
+                                </div>
+
                             </div>
                         </div>
                         @endforeach

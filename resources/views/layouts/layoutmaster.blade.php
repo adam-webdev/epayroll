@@ -223,6 +223,8 @@
   <aside id="sidebar" class="sidebar">
 
     <ul class="sidebar-nav" id="sidebar-nav">
+      @role('admin')
+      <li class="nav-heading">Admin</li>
 
       <li class="nav-item">
         <a class="nav-link " href="/dashboard">
@@ -272,6 +274,7 @@
         </ul>
       </li>
 
+
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#tables-nav1" data-bs-toggle="collapse" href="#">
           <i class='bx bx-money-withdraw'></i>
@@ -293,34 +296,14 @@
 
 
         </ul>
+
       </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#tables-nav1" data-bs-toggle="collapse" href="#">
-          <i class='bx bx-money-withdraw'></i>
-         <span>Transaksi</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="tables-nav1" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="{{route('absensi.index')}}">
-             <i class='bx bxs-notepad' style="font-size: 14px;"></i>
-             <span>Absensi</span>
-            </a>
-          </li>
-          <li>
-            <a href="{{route('gaji.index')}}">
-             <i class='bx bxs-donate-heart' style="font-size: 14px;"></i>
-             <span>Gaji</span>
-            </a>
-          </li>
-
-
-        </ul>
-      </li>
-
+      @endrole
+      <li class="nav-heading">Pegawai</li>
       <li>
-        <a href="{{route('gaji.karyawan')}}">
-         <i class='bx bxs-donate-heart' style="font-size: 14px;"></i>
-         <span>Riwayat Gaji Karyawan</span>
+        <a href="{{route('gaji.karyawan')}}" class="nav-link collapsed">
+        <i class='bx bxs-donate-heart' style="font-size: 14px;"></i>
+        <span>Riwayat Gaji Karyawan</span>
         </a>
       </li>
 
@@ -328,7 +311,6 @@
 
 
 
-      <!-- <li class="nav-heading">Pages</li> -->
 
 
 

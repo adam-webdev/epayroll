@@ -262,9 +262,66 @@ class GajiController extends Controller
     }
 
 
+    public function index()
+    {
+        // 1. Retrieve all salary records, ordered by year and month
+        // We need the raw encrypted values to decrypt them later.
+        $gajisRaw = Gaji::orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->get();
 
+        $processedGajis = collect(); // Initialize an empty collection to hold our aggregated data
 
-    public function index(Request $request)
+        if ($gajisRaw->isEmpty()) {
+            Log::info("No raw salary data found to process.");
+            // No action needed, $processedGajis remains empty
+        } else {
+            // 2. Group the raw data by month and year.
+            // Then, for each group, decrypt and sum the 'gaji_bersih'.
+            $processedGajis = $gajisRaw->groupBy(function ($item) {
+                // Ensure bulan is always two digits for consistent grouping keys (e.g., '01-2023', '12-2024')
+                return str_pad($item->bulan, 2, '0', STR_PAD_LEFT) . '-' . $item->tahun;
+            })->map(function ($group) {
+                $totalGajiBersih = 0;
+                // For the status, you can take the status of the first item in the group
+                // or define a more complex logic (e.g., 'Paid' if all are paid).
+                // Using first() is simple and common if status is expected to be consistent within a group.
+                $status = $group->first()->status;
+
+                foreach ($group as $gaji) {
+                    try {
+                        // Decrypt the gaji_bersih for each individual record
+                        // Cast to (int) to ensure it's treated as a number
+                        $totalGajiBersih += (int) Crypt::decryptString($gaji->gaji_bersih);
+                    } catch (DecryptException $e) {
+                        // Log a warning if decryption fails for a specific record.
+                        // This is crucial for debugging issues with APP_KEY or corrupted data.
+                        Log::warning("Decryption failed for Gaji ID {$gaji->id}, bulan {$gaji->bulan}, tahun {$gaji->tahun}: " . $e->getMessage());
+                        // You might choose to skip this record's value or handle it differently
+                        // (e.g., set totalGajiBersih to null or a special error value)
+                    } catch (\Exception $e) {
+                        // Catch any other unexpected exceptions during iteration
+                        Log::error("An unexpected error occurred while processing Gaji ID {$gaji->id}: " . $e->getMessage());
+                    }
+                }
+
+                return [
+                    'bulan' => $group->first()->bulan,
+                    'tahun' => $group->first()->tahun,
+                    'total_gaji' => $totalGajiBersih,
+                    'status' => $status,
+                ];
+            })->values(); // Use ->values() to reset the array keys from the group keys to a simple numeric index.
+        }
+
+        // For debugging: Check the final processed data
+        // dd($processedGajis); // Use $processedGajis, not $gaji
+
+        // Pass the processed data to your view
+        return view('gaji.index', ['gajis' => $processedGajis]);
+    }
+
+    public function index00(Request $request)
     {
         // $bulan = (int) ($request->bulan ?? now()->format('m'));
         // $tahun = (int) ($request->tahun ?? now()->format('Y'));
@@ -279,14 +336,13 @@ class GajiController extends Controller
         //     ->where('tahun', $tahun)
         //     ->get();
 
-
         $gajis = Gaji::selectRaw('bulan, tahun, SUM(gaji_bersih) as total_gaji, MAX(status) as status')
             ->groupBy('bulan', 'tahun')
             ->orderBy('tahun', 'desc')
             ->orderBy('bulan', 'desc')
             ->get();
 
-
+        dd($gaji);
         return view('gaji.index', compact('gajis'));
     }
 

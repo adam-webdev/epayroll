@@ -174,6 +174,18 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="col-md-4 mt-2">
+                      <div class="form-floating">
+                          <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" id="jenis_kelamin">
+                              <option value="Laki-laki" {{ (old('jenis_kelamin', $karyawan->jenis_kelamin) == 'Laki-laki') ? 'selected' : '' }}>Laki-laki</option>
+                              <option value="Perempuan" {{ (old('jenis_kelamin', $karyawan->jenis_kelamin) == 'Perempuan') ? 'selected' : '' }}>Perempuan</option>
+                          </select>
+                          <label for="jenis_kelamin">Jenis Kelamin</label>
+                          @error('jenis_kelamin')
+                              <div class="invalid-feedback">{{ $message }}</div>
+                          @enderror
+                      </div>
+                  </div>
 
                     <!-- <div class="col-md-4 mt-2">
                       <div class="form-floating">
